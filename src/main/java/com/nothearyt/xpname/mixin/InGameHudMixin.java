@@ -15,8 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class InGameHudMixin {
     @Inject(method = "renderAddons", at = @At("HEAD"), cancellable = true)
     private void xpname$draw(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (!XpNameClient.isEnabled()) return;
         String name = XpNameClient.getName();
-        if (name == null || name.isEmpty()) return;
+        if (name == null || name.isEmpty()) {
+            ci.cancel();
+            return;
+        }
 
         TextRenderer tr = MinecraftClient.getInstance().textRenderer;
         int x = (context.getScaledWindowWidth() - tr.getWidth(name)) / 2;
